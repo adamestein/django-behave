@@ -4,7 +4,7 @@ from setuptools import setup
 setup(
     name='django-behave',
     packages=['django_behave'],
-    version='0.1.6',
+    version='0.1.6.1',
     description='Django Test Runner for the Behave BDD module',
     author='Rachel Willmer',
     author_email='rachel@willmer.org',
