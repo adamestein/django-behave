@@ -1,7 +1,6 @@
 """Django test runner which uses behave for BDD tests.
 """
 
-from optparse import make_option
 from os.path import dirname, abspath, basename, join, isdir
 
 try:
@@ -63,14 +62,7 @@ def get_features(app_module):
 
 # Get Behave command line options and add our own
 def get_options():
-    option_list = (
-        make_option("--behave_browser",
-                    action="store",
-                    dest="browser",
-                    help="Specify the browser to use for testing",
-                    ),
-    )
-
+    option_list = (['--behave_browser', {'dest': 'browser', 'help': 'Specify the browser to use for testing'}],)
     option_info = {"--behave_browser": True}
 
     for fixed, keywords in options:
@@ -83,18 +75,12 @@ def get_options():
 
         # Only deal with those options that have a long version
         if long_option:
-            # remove function types, as they are not compatible with optparse
-            if hasattr(keywords.get('type'), '__call__'):
-                del keywords['type']
-
-            # Remove 'config_help' as that's not a valid optparse keyword
+            # Remove 'config_help' as that's not a valid argparse keyword
             if "config_help" in keywords:
                 keywords.pop("config_help")
 
             name = "--behave_" + long_option[2:]
-
-            option_list = option_list + \
-                          (make_option(name, **keywords),)
+            option_list = option_list + ([name, keywords],)
 
             # Need to store a little info about the Behave option so that we
             # can deal with it later.  'has_arg' refers to if the option has
@@ -222,7 +208,7 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
         option_list, cls.option_info = get_options()
 
         for option in option_list:
-            parser.add_argument(*option._long_opts, action=option.action, dest=option.dest, help=option.help)
+            parser.add_argument(option[0], **option[1])
 
     def make_bdd_test_suite(self, features_dir):
         return DjangoBehaveTestCase(features_dir=features_dir, option_info=self.option_info)
